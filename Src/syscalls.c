@@ -34,6 +34,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
+#include <cmsis_compiler.h>
 
 
 /* Variables */
@@ -103,7 +104,7 @@ caddr_t _sbrk(int incr)
 		heap_end = &end;
 
 	prev_heap_end = heap_end;
-	if (heap_end + incr > stack_ptr)
+	if (heap_end + incr > (char *)__get_MSP())
 	{
 //		write(1, "Heap and stack collision\n", 25);
 //		abort();
