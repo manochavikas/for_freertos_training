@@ -101,8 +101,10 @@ StaticTask_t task1_buffer;
 
 void task_1_hello_world(void *task1_ptr)
 {
+	int i = 1;
 	while(1) {
-		printf("task1: hello world\n");
+		printf("task1: hello world: count = %d\n", i++);
+		vTaskDelay(1000);
 	}
 
 	vTaskDelete(NULL);
