@@ -109,6 +109,24 @@ void task_1_hello_world(void *task1_ptr)
 
 	vTaskDelete(NULL);
 }
+
+/*task2 config*/
+enum task2_config {
+	TASK2_PRIO = osPriorityNormal,
+	TASK2_STACK_SZ = configMINIMAL_STACK_SIZE,
+};
+
+xTaskHandle task2Handle;
+void task2Counter_func(void *task2_arg)
+{
+	int i = 0;
+	while(1) {
+		printf("task2: counter = %d\n", i++);
+		vTaskDelay(500);
+	}
+
+	vTaskDelete(NULL);
+}
 /* USER CODE END 0 */
 
 /**
@@ -189,6 +207,16 @@ int main(void)
   if(!task1Handle)
          printf("Not sufficient memory to create task1\n");
 
+  BaseType_t task2_ret = xTaskCreate(
+		  task2Counter_func,
+		  "task2Name_counter",
+		  TASK2_STACK_SZ,
+		  NULL,
+		  TASK2_PRIO,
+		  task2Handle
+		  );
+  if(task2_ret != pdTRUE)
+	  printf("Not sufficient memory to create task2\n");
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
