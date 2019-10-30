@@ -89,6 +89,19 @@ PUTCHAR_PROTOTYPE
 static StackType_t ucTaskStack[ 4* configMINIMAL_STACK_SIZE * sizeof( StackType_t ) ];
 static osStaticThreadDef_t xmyTask;
 
+enum task1_config {
+	TASK1_PRIO = osPriorityNormal +10,
+	TASK1_STACK_SZ = configMINIMAL_STACK_SIZE,
+};
+
+void task_1_hello_world(void *task1_ptr)
+{
+	while(1) {
+		printf("task1: hello world\n");
+	}
+
+	vTaskDelete(NULL);
+}
 /* USER CODE END 0 */
 
 /**
@@ -156,6 +169,24 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  xTaskHandle task1Handle;
+  StackType_t task1_stack_buffer[TASK1_STACK_SZ];
+  //StaticTask_t task1_buffer[sizeof(TCB_t)];
+  StaticTask_t task1_buffer;
+
+  task1Handle = xTaskCreateStatic(
+		task_1_hello_world,
+		"task_name_hello_world",
+		TASK1_STACK_SZ,
+		NULL,
+		TASK1_PRIO,
+		task1_stack_buffer,
+		&task1_buffer
+               );
+
+  if(!task1Handle)
+         printf("Not sufficient memory to create task1\n");
+
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
