@@ -94,6 +94,11 @@ enum task1_config {
 	TASK1_STACK_SZ = configMINIMAL_STACK_SIZE,
 };
 
+xTaskHandle task1Handle;
+StackType_t task1_stack_buffer[TASK1_STACK_SZ];
+//StaticTask_t task1_buffer[sizeof(TCB_t)];
+StaticTask_t task1_buffer;
+
 void task_1_hello_world(void *task1_ptr)
 {
 	while(1) {
@@ -169,11 +174,6 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  xTaskHandle task1Handle;
-  StackType_t task1_stack_buffer[TASK1_STACK_SZ];
-  //StaticTask_t task1_buffer[sizeof(TCB_t)];
-  StaticTask_t task1_buffer;
-
   task1Handle = xTaskCreateStatic(
 		task_1_hello_world,
 		"task_name_hello_world",
