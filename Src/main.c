@@ -90,7 +90,7 @@ static StackType_t ucTaskStack[ 4* configMINIMAL_STACK_SIZE * sizeof( StackType_
 static osStaticThreadDef_t xmyTask;
 
 enum task1_config {
-	TASK1_PRIO = osPriorityNormal +10,
+	TASK1_PRIO = osPriorityNormal,
 	TASK1_STACK_SZ = configMINIMAL_STACK_SIZE,
 };
 
