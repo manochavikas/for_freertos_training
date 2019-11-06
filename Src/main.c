@@ -89,6 +89,14 @@ PUTCHAR_PROTOTYPE
 static StackType_t ucTaskStack[ 4* configMINIMAL_STACK_SIZE * sizeof( StackType_t ) ];
 static osStaticThreadDef_t xmyTask;
 
+/* Q config */
+#define Q_LEN	5
+struct my_data {
+	  int key;
+	  int val;
+};
+QueueHandle_t myQHandle;
+
 enum task1_config {
 	TASK1_PRIO = osPriorityNormal,
 	TASK1_STACK_SZ = configMINIMAL_STACK_SIZE,
@@ -102,8 +110,10 @@ StaticTask_t task1_buffer;
 void task_1_hello_world(void *task1_ptr)
 {
 	int i = 1;
+	struct my_data rx_buf;
 	while(1) {
-		printf("task1: hello world: count = %d\n", i++);
+		xQueueReceive(myQHandle, &rx_buf, 0);
+		printf("task1: hello world: count = %d\n\r", i++);
 		vTaskDelay(1000);
 	}
 
@@ -120,13 +130,16 @@ xTaskHandle task2Handle;
 void task2Counter_func(void *task2_arg)
 {
 	int i = 0;
+	struct my_data rx_buf;
 	while(1) {
-		printf("task2: counter = %d\n", i++);
+		xQueueReceive(myQHandle, &rx_buf, 0);
+		printf("task2: counter = %d\n\r", i++);
 		vTaskDelay(500);
 	}
 
 	vTaskDelete(NULL);
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -217,6 +230,8 @@ int main(void)
 		  );
   if(task2_ret != pdTRUE)
 	  printf("Not sufficient memory to create task2\n");
+
+  myQHandle = xQueueCreate(Q_LEN, sizeof(struct my_data));
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -815,15 +830,17 @@ void StartDefaultTask(void const * argument)
 //  printf("float is %f", float_val++);
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
+
+  struct my_data tx_buf;
+  tx_buf.key = 1;
+  tx_buf.val = 100;
   for(;;)
   {
-	  puts("hi\n\r");
-	  {
-		  char ch = 'C';
-		  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
-	  }
-	  printf("my float number is %f\n\r", float_val++);
-	  printf("my int number is %d\n\r", int_val);
+	  printf("default task: my float number is %f\n\r", float_val++);
+	  printf("default task: my int number is %d\n\r", int_val);
+	  xQueueSend(myQHandle, &tx_buf, 0);
+	  tx_buf.key++;
+	  tx_buf.val += 100;
 	  osDelay(1000);
   }
   /* USER CODE END 5 */ 
