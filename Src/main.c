@@ -107,15 +107,17 @@ StackType_t task1_stack_buffer[TASK1_STACK_SZ];
 //StaticTask_t task1_buffer[sizeof(TCB_t)];
 StaticTask_t task1_buffer;
 
+xSemaphoreHandle mySemaMutexHandle;
+
 void task_1_hello_world(void *task1_ptr)
 {
 	int i = 1000;
 	struct my_data rx_buf;
 	while(1) {
 		xQueueReceive(myQHandle, &rx_buf, 1000);
-		vTaskSuspendAll();
+		xSemaphoreTake(mySemaMutexHandle, portMAX_DELAY);
 		printf("task1: hello world: count = %d\n\r", i++);
-		xTaskResumeAll();
+		xSemaphoreGive(mySemaMutexHandle);
 	}
 
 	vTaskDelete(NULL);
@@ -134,9 +136,9 @@ void task2Counter_func(void *task2_arg)
 	struct my_data rx_buf;
 	while(1) {
 		xQueueReceive(myQHandle, &rx_buf, 1000);
-		vTaskSuspendAll();
+		xSemaphoreTake(mySemaMutexHandle, portMAX_DELAY);
 		printf("task2: counter = %d\n\r", i++);
-		xTaskResumeAll();
+		xSemaphoreGive(mySemaMutexHandle);
 	}
 
 	vTaskDelete(NULL);
@@ -234,6 +236,9 @@ int main(void)
 	  printf("Not sufficient memory to create task2\n");
 
   myQHandle = xQueueCreate(Q_LEN, sizeof(struct my_data));
+
+  mySemaMutexHandle = xSemaphoreCreateMutex();
+
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
