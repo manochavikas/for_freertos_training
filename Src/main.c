@@ -112,9 +112,8 @@ void task_1_hello_world(void *task1_ptr)
 	int i = 1;
 	struct my_data rx_buf;
 	while(1) {
-		xQueueReceive(myQHandle, &rx_buf, 0);
+		xQueueReceive(myQHandle, &rx_buf, 1000);
 		printf("task1: hello world: count = %d\n\r", i++);
-		vTaskDelay(1000);
 	}
 
 	vTaskDelete(NULL);
@@ -132,9 +131,8 @@ void task2Counter_func(void *task2_arg)
 	int i = 0;
 	struct my_data rx_buf;
 	while(1) {
-		xQueueReceive(myQHandle, &rx_buf, 0);
+		xQueueReceive(myQHandle, &rx_buf, 1000);
 		printf("task2: counter = %d\n\r", i++);
-		vTaskDelay(500);
 	}
 
 	vTaskDelete(NULL);
